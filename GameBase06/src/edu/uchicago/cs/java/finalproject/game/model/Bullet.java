@@ -2,6 +2,7 @@ package edu.uchicago.cs.java.finalproject.game.model;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Observer;
 
 import edu.uchicago.cs.java.finalproject.controller.Game;
 
@@ -12,11 +13,10 @@ public class Bullet extends Sprite {
 
 	 
 	
-public Bullet(Falcon fal){
+public Bullet(Falcon fal, Observer observer){
 		
 		super();
-		
-		
+		addObserver(observer);
 		//defined the points on a cartesean grid
 		ArrayList<Point> pntCs = new ArrayList<Point>();
 		
@@ -43,7 +43,9 @@ public Bullet(Falcon fal){
 	    //set the bullet orientation to the falcon (ship) orientation
 	    setOrientation(fal.getOrientation());
 
-
+		//notify the observers for change
+	    setChanged();
+  		notifyObservers();
 	}
 
     //override the expire method - once an object expires, then remove it from the arrayList. 

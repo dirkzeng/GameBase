@@ -1,7 +1,10 @@
 package edu.uchicago.cs.java.finalproject.game.model;
 
 
+import java.awt.Graphics;
 import java.util.Arrays;
+import java.util.Observable;
+import java.util.Observer;
 
 import edu.uchicago.cs.java.finalproject.controller.Game;
 
@@ -17,11 +20,11 @@ public class Asteroid extends Sprite {
 	//when you explode a Large asteroid, you should spawn 2 or 3 medium asteroids
 	//same for medium asteroid, you should spawn small asteroids
 	//small asteroids get blasted into debris
-	public Asteroid(int nSize){
-		
+	public Asteroid(int nSize, Observer observer){
 		//call Sprite constructor
 		super();
-		
+		//add observer for this model
+		addObserver(observer);
 		
 		//the spin will be either plus or minus 0-9
 		int nSpin = Game.R.nextInt(10);
@@ -50,18 +53,22 @@ public class Asteroid extends Sprite {
 		else
 			setRadius(RAD/(nSize * 2));
 		
+		//notify the observers for change
+		setChanged();
+		notifyObservers();
 
 	}
 	
 
 	
 	
-	public Asteroid(Asteroid astExploded){
+	public Asteroid(Asteroid astExploded, Observer observer){
 	
 
 		//call Sprite constructor
 		super();
-		
+		//add observer for this model
+		this.addObserver(observer);
 		int  nSizeNew =	astExploded.getSize() + 1;
 		
 		
@@ -91,7 +98,8 @@ public class Asteroid extends Sprite {
 		setRadius(RAD/(nSizeNew * 2));
 		setCenter(astExploded.getCenter());
 		
-		
+		//notify the observers for change
+		notifyObservers();
 		
 
 	}

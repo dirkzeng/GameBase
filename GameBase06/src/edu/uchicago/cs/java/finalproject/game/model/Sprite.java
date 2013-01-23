@@ -67,8 +67,8 @@ public abstract class Sprite extends Observable implements Movable {
 
 			setCenter(new Point((int) dX, (int) dY));
 		}
+		setChanged();
 		notifyObservers();
-
 	}
 
 	public Sprite() {

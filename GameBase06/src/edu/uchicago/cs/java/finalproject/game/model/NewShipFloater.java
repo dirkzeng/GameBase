@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Observer;
 
 import edu.uchicago.cs.java.finalproject.controller.Game;
 
@@ -12,10 +13,12 @@ public class NewShipFloater extends Sprite {
 
 	private int nSpin;
 
-	public NewShipFloater() {
+	public NewShipFloater(Observer observer) {
 
 		super();
-
+		
+		//add observer for this model
+		addObserver(observer);
 		ArrayList<Point> pntCs = new ArrayList<Point>();
 		// top of ship
 		pntCs.add(new Point(5, 5));
@@ -62,6 +65,10 @@ public class NewShipFloater extends Sprite {
 
 		//random orientation 
 		 setOrientation(Game.R.nextInt(360));
+		 
+		//notify the observers for change
+		setChanged();
+		notifyObservers();
 
 	}
 

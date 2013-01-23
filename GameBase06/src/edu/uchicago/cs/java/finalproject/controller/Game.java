@@ -65,6 +65,7 @@ public class Game implements Runnable, KeyListener {
 
 		gmpPanel = new GamePanel(DIM);
 		gmpPanel.addKeyListener(this);
+		gmpPanel.setDelay(ANI_DELAY);
 
 		clpThrust = Sound.clipForLoopFactory("whitenoise.wav");
 		clpMusicBackground = Sound.clipForLoopFactory("music-background.wav");
@@ -111,10 +112,15 @@ public class Game implements Runnable, KeyListener {
 		while (Thread.currentThread() == thrAnim) {
 			tick();
 			spawnNewShipFloater();
-			gmpPanel.update(gmpPanel.getGraphics()); // update takes the graphics context we must 
+			//gmpPanel.update(gmpPanel.getGraphics()); // update takes the graphics context we must 
 														// surround the sleep() in a try/catch block
 														// this simply controls delay time between 
 														// the frames of the animation
+			//we update the models here
+			iterateMovables(CommandCenter.movDebris,
+			           CommandCenter.movFloaters, 
+			           CommandCenter.movFoes,
+			           CommandCenter.movFriends);
 
 			//this might be a good place to check for collisions
 			checkCollisions();
@@ -175,7 +181,7 @@ public class Game implements Runnable, KeyListener {
 					if ((movFriend instanceof Falcon) ){
 						if (!CommandCenter.getFalcon().getProtected()){
 							tupMarkForRemovals.add(new Tuple(CommandCenter.movFriends, movFriend));
-							CommandCenter.spawnFalcon(false);
+							CommandCenter.spawnFalcon(false, gmpPanel);
 							killFoe(movFoe);
 						}
 					}
@@ -240,16 +246,16 @@ public class Game implements Runnable, KeyListener {
 			//big asteroid 
 			if(astExploded.getSize() == 0){
 				//spawn two medium Asteroids
-				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded)));
-				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded)));
+				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded, gmpPanel)));
+				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded, gmpPanel)));
 				
 			} 
 			//medium size aseroid exploded
 			else if(astExploded.getSize() == 1){
 				//spawn three small Asteroids
-				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded)));
-				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded)));
-				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded)));
+				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded, gmpPanel)));
+				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded, gmpPanel)));
+				tupMarkForAdds.add(new Tuple(CommandCenter.movFoes,new Asteroid(astExploded, gmpPanel)));
 			}
 			//remove the original Foe	
 			tupMarkForRemovals.add(new Tuple(CommandCenter.movFoes, movFoe));
@@ -288,14 +294,14 @@ public class Game implements Runnable, KeyListener {
 		//make the appearance of power-up dependent upon ticks and levels
 		//the higher the level the more frequent the appearance
 		if (nTick % (SPAWN_NEW_SHIP_FLOATER - nLevel * 7) == 0) {
-			CommandCenter.movFloaters.add(new NewShipFloater());
+			CommandCenter.movFloaters.add(new NewShipFloater(gmpPanel));
 		}
 	}
 
 	// Called when user presses 's'
 	private void startGame() {
 		CommandCenter.clearAll();
-		CommandCenter.initGame();
+		CommandCenter.initGame(gmpPanel);
 		CommandCenter.setLevel(0);
 		CommandCenter.setPlaying(true);
 		CommandCenter.setPaused(false);
@@ -307,7 +313,7 @@ public class Game implements Runnable, KeyListener {
 	private void spawnAsteroids(int nNum) {
 		for (int nC = 0; nC < nNum; nC++) {
 			//Asteroids with size of zero are big
-			CommandCenter.movFoes.add(new Asteroid(0));
+			CommandCenter.movFoes.add(new Asteroid(0, gmpPanel));
 		}
 	}
 	
@@ -340,7 +346,18 @@ public class Game implements Runnable, KeyListener {
 		}
 	}
 	
-	
+	//we do the move the asteroid and others here so the viewer do not change the state of model
+	//for each movable array, process it.
+	private void iterateMovables(CopyOnWriteArrayList<Movable>...movMovz){
+		
+		for (CopyOnWriteArrayList<Movable> movMovs : movMovz) {
+			for (Movable mov : movMovs) {
+				mov.move();
+				mov.expire();
+			}
+		}
+		
+	}
 	
 
 	// Varargs for stopping looping-music-clips
@@ -408,13 +425,13 @@ public class Game implements Runnable, KeyListener {
 		if (fal != null) {
 			switch (nKey) {
 			case FIRE:
-				CommandCenter.movFriends.add(new Bullet(fal));
+				CommandCenter.movFriends.add(new Bullet(fal, gmpPanel));
 				Sound.playSound("laser.wav");
 				break;
 				
 			//special is a special weapon, current it just fires the cruise missile. 
 			case SPECIAL:
-				CommandCenter.movFriends.add(new Cruise(fal));
+				CommandCenter.movFriends.add(new Cruise(fal, gmpPanel));
 				//Sound.playSound("laser.wav");
 				break;
 				

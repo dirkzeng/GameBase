@@ -4,6 +4,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observer;
 
 import edu.uchicago.cs.java.finalproject.controller.Game;
 
@@ -41,9 +42,11 @@ public class Falcon extends Sprite {
 	// CONSTRUCTOR 
 	// ==============================================================
 	
-	public Falcon() {
+	public Falcon(Observer observer) {
 		super();
-
+		
+		addObserver(observer);
+		
 		ArrayList<Point> pntCs = new ArrayList<Point>();
 		
 		// top of ship
@@ -88,6 +91,9 @@ public class Falcon extends Sprite {
 		//these are falcon specific
 		setProtected(true);
 		setFadeValue(0);
+		//notify the observers for change
+		setChanged();
+		notifyObservers();
 	}
 	
 	

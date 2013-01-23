@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Observer;
 
 import edu.uchicago.cs.java.finalproject.controller.Game;
 
@@ -18,10 +19,11 @@ public class Cruise extends Sprite {
 		public double[] dLengthsAlts;
 		public double[] dDegreesAlts;
 
-	public Cruise(Falcon fal) {
+	public Cruise(Falcon fal, Observer observer) {
 
 		super();
 
+		addObserver(observer);
 		//defined the points on a cartesean grid
 		ArrayList<Point> pntCs = new ArrayList<Point>();
 
@@ -66,6 +68,10 @@ public class Cruise extends Sprite {
 		//set the bullet orientation to the falcon (ship) orientation
 		setOrientation(fal.getOrientation());
 		setColor(Color.RED);
+		
+		//notify the observers for change
+		setChanged();
+		notifyObservers();
 
 	}
 

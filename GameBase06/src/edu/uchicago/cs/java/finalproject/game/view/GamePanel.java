@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Panel;
 import java.awt.Point;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
@@ -41,6 +42,8 @@ import edu.uchicago.cs.java.finalproject.game.model.Sprite;
 	private int nFontWidth;
 	private int nFontHeight;
 	private String strDisplay = "";
+	private long timestamp = 0;
+	private int delay = 0;
 	
 
 	// ==============================================================
@@ -58,6 +61,7 @@ import edu.uchicago.cs.java.finalproject.game.model.Sprite;
 		gmf.setResizable(false);
 		gmf.setVisible(true);
 		this.setFocusable(true);
+		System.out.println("initialize game panel");
 	}
 	
 	
@@ -127,10 +131,8 @@ import edu.uchicago.cs.java.finalproject.game.model.Sprite;
 		for (CopyOnWriteArrayList<Movable> movMovs : movMovz) {
 			for (Movable mov : movMovs) {
 
-				mov.move();
 				mov.draw(g);
 				mov.fadeInOut();
-				mov.expire();
 			}
 		}
 		
@@ -227,10 +229,19 @@ import edu.uchicago.cs.java.finalproject.game.model.Sprite;
 	public void setFrm(GameFrame frm) {this.gmf = frm;}
 
 
+	//passing the panel refresh delay into this panel
+	public void setDelay(int delay){
+		this.delay = delay;
+	}
 	@Override
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub
-		Sprite s = (Sprite)o;
-		s.draw(this.getGraphics());
+		//doing this we don't have to refresh the panel after every single change
+		if(System.currentTimeMillis() - timestamp >= delay){
+			timestamp = System.currentTimeMillis();
+			update(this.getGraphics());
+			System.out.println(timestamp);
+		}
+		
 	}	
 }

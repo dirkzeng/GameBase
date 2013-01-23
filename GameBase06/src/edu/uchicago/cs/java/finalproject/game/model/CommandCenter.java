@@ -1,5 +1,6 @@
 package edu.uchicago.cs.java.finalproject.game.model;
 
+import java.util.Observer;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import edu.uchicago.cs.java.finalproject.sounds.Sound;
@@ -20,24 +21,24 @@ public class CommandCenter {
 	public static CopyOnWriteArrayList<Movable> movFriends = new CopyOnWriteArrayList<Movable>();
 	public static CopyOnWriteArrayList<Movable> movFoes = new CopyOnWriteArrayList<Movable>();
 	public static CopyOnWriteArrayList<Movable> movFloaters = new CopyOnWriteArrayList<Movable>();
-	
 
 	// Constructor made private - static Utility class only
 	private CommandCenter() {}
 	
-	public static void initGame(){
+	public static void initGame(Observer observer){
 		setLevel(1);
 		setScore(0);
 		setNumFalcons(3);
-		spawnFalcon(true);
+		spawnFalcon(true, observer);
 	}
 	
+
 	// The parameter is true if this is for the beginning of the game, otherwise false
 	// When you spawn a new falcon, you need to decrement its number
-	public static void spawnFalcon(boolean bFirst) {
+	public static void spawnFalcon(boolean bFirst, Observer observer) {
 
 		if (getNumFalcons() != 0) {
-			falShip = new Falcon();
+			falShip = new Falcon(observer);
 			movFriends.add(falShip);
 			if (!bFirst)
 			    setNumFalcons(getNumFalcons() - 1);
